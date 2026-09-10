@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FaceScore AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 20% 10%, #172554, transparent 35%),
+                radial-gradient(circle at 80% 80%, #064e3b, transparent 35%),
+                #050810;
+
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* HEADER */
+
+        header {
+            text-align: center;
+            padding: 30px 15px 20px;
+        }
+
+        .logo {
+            font-size: 34px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #8e9aae;
+            margin-top: 8px;
+        }
+
+        /* MAIN */
+
+        .app {
+            width: 1150px;
+            max-width: 94%;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 25px;
+        }
+
+        /* CAMERA */
+
+        .camera-section {
+            background: rgba(17, 24, 39, .85);
+            border: 1px solid #263044;
+            border-radius: 22px;
+            overflow: hidden;
+
+            box-shadow:
+                0 20px 80px rgba(0, 0, 0, .45),
+                0 0 50px rgba(0, 255, 160, .08);
+        }
+
+        .camera {
+            position: relative;
+            background: black;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            transform: scaleX(-1);
+        }
+
+        canvas {
+            position: absolute;
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            transform: scaleX(-1);
+        }
+
+        .camera-bottom {
+            padding: 18px;
+            text-align: center;
+        }
+
+        button {
+            border: 0;
+            border-radius: 12px;
+
+            padding: 14px 30px;
+
+            background:
+                linear-gradient(135deg,
+                    #00ffa3,
+                    #00aaff);
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 25px rgba(0, 220, 170, .2);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .status {
+            margin-top: 12px;
+            color: #00ffa3;
+        }
+
+        /* RESULTS */
+
+        .results {
+            background: rgba(17, 24, 39, .9);
+            border: 1px solid #263044;
+
+            border-radius: 22px;
+
+            padding: 25px;
+        }
+
+        /* SCORE */
+
+        .score-area {
+            text-align: center;
+        }
+
+        .score-ring {
+            width: 175px;
+            height: 175px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+
+            background:
+                conic-gradient(#00ffa3 var(--score),
+                    #202b3d 0);
+
+            box-shadow:
+                0 0 40px rgba(0, 255, 160, .15);
+        }
+
+        .score-ring::before {
+            content: "";
+
+            position: absolute;
+
+            width: 145px;
+            height: 145px;
+
+            border-radius: 50%;
+
+            background: #101725;
+        }
+
+        .score-number {
+            position: relative;
+            z-index: 2;
+
+            font-size: 52px;
+            font-weight: 800;
+        }
+
+        .score-title {
+            color: #8e9aae;
+        }
+
+        .tier {
+            margin-top: 12px;
+
+            display: inline-block;
+
+            padding: 8px 18px;
+
+            border-radius: 30px;
+
+            background: rgba(0, 255, 160, .1);
+
+            border: 1px solid rgba(0, 255, 160, .3);
+
+            color: #00ffa3;
+
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        /* FEATURES */
+
+        .features {
+            margin-top: 25px;
+        }
+
+        .feature {
+            margin: 18px 0;
+        }
+
+        .feature-header {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+        }
+
+        .feature-name {
+            color: #dbe4f0;
+        }
+
+        .feature-score {
+            color: #00ffa3;
+            font-weight: bold;
+        }
+
+        .bar {
+            width: 100%;
+            height: 8px;
+
+            background: #273247;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+
+            width: 0%;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(90deg,
+                    #00ffa3,
+                    #00aaff);
+
+            transition:
+                width .6s ease;
+        }
+
+        /* INFORMATION */
+
+        .details {
+            margin-top: 25px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+        }
+
+        .detail {
+            background: #151e2d;
+
+            border: 1px solid #253046;
+
+            padding: 14px;
+
+            border-radius: 12px;
+        }
+
+        .detail-label {
+            color: #7f8ba0;
+
+            font-size: 13px;
+        }
+
+        .detail-value {
+            margin-top: 5px;
+
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+        /* ANALYSIS */
+
+        .analysis {
+            margin-top: 18px;
+
+            padding: 17px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(135deg,
+                    rgba(0, 255, 160, .07),
+                    rgba(0, 160, 255, .05));
+
+            border: 1px solid #243449;
+
+            color: #aab5c5;
+
+            line-height: 1.6;
+        }
+
+        /* FOOTER */
+
+        .disclaimer {
+            max-width: 900px;
+
+            margin: 25px auto 40px;
+
+            text-align: center;
+
+            padding: 0 20px;
+
+            color: #68758a;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:850px) {
+
+            .app {
+                grid-template-columns: 1fr;
+            }
+
+            .logo {
+                font-size: 27px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+
+        <div class="logo">
+            ✨ FaceScore AI
+        </div>
+
+        <div class="subtitle">
+            Real-time facial geometry analyzer
+        </div>
+
+    </header>
+
+
+    <div class="app">
+
+        <!-- CAMERA -->
+
+        <section class="camera-section">
+
+            <div class="camera">
+
+                <video id="video" autoplay playsinline>
+                </video>
+
+                <canvas id="canvas"></canvas>
+
+            </div>
+
+            <div class="camera-bottom">
+
+                <button onclick="startCamera()">
+                📷 Start Face Scan
+            </button>
+
+                <div class="status" id="status">
+                    Camera not started
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESULTS -->
+
+        <section class="results">
+
+            <div class="score-area">
+
+                <div class="score-ring" id="scoreRing" style="--score:0%">
+
+                    <div class="score-number" id="score">
+                        --
+                    </div>
+
+                </div>
+
+                <div class="score-title">
+                    Visual Harmony Score
+                </div>
+
+                <div class="tier" id="tier">
+                    Waiting for scan
+                </div>
+
+            </div>
+
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+                <div class="feature">
+
+                    <div class="feature-header">
+
+                        <span class="feature-name">
+                        Facial Symmetry
+                    </span>
+
+                        <span
+                        class="feature-score"
+                        id="symmetryValue">
+                        --
+                    </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <div class="fill" id="symmetryBar">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-header">
+
+                        <span class="feature-name">
+                        Face Proportion
+                    </span>
+
+                        <span
+                        class="feature-score"
+                        id="proportionValue">
+                        --
+                    </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <div class="fill" id="proportionBar">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-header">
+
+                        <span class="feature-name">
+                        Eye Spacing
+                    </span>
+
+                        <span
+                        class="feature-score"
+                        id="eyeValue">
+                        --
+                    </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <div class="fill" id="eyeBar">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-header">
+
+                        <span class="feature-name">
+                        Facial Balance
+                    </span>
+
+                        <span
+                        class="feature-score"
+                        id="balanceValue">
+                        --
+                    </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <div class="fill" id="balanceBar">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DETAILS -->
+
+            <div class="details">
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Face Shape
+                    </div>
+
+                    <div class="detail-value" id="shape">
+                        --
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Face Ratio
+                    </div>
+
+                    <div class="detail-value" id="ratio">
+                        --
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Eye Distance
+                    </div>
+
+                    <div class="detail-value" id="eyeDistance">
+                        --
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Face Width
+                    </div>
+
+                    <div class="detail-value" id="faceWidth">
+                        --
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ANALYSIS -->
+
+            <div class="analysis" id="analysis">
+
+                Position your face in the camera
+                to begin the analysis.
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <div class="disclaimer">
+
+        This is a fun, geometry-based face analysis.
+        It does not objectively measure attractiveness,
+        personality, health, intelligence, or worth.
+        Results can change with lighting, camera angle,
+        expression, and distance from the camera.
+
+    </div>
+
+
+    <!-- MEDIAPIPE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+
+
+    <script>
+        /* ==========================================
+   ELEMENTS
+========================================== */
+
+const video =
+    document.getElementById("video");
+
+const canvas =
+    document.getElementById("canvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+const status =
+    document.getElementById("status");
+
+const score =
+    document.getElementById("score");
+
+const scoreRing =
+    document.getElementById("scoreRing");
+
+const tier =
+    document.getElementById("tier");
+
+const analysis =
+    document.getElementById("analysis");
+
+
+/* ==========================================
+   MEDIAPIPE
+========================================== */
+
+const faceMesh = new FaceMesh({
+
+    locateFile: file => {
+
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+
+    }
+
+});
+
+
+faceMesh.setOptions({
+
+    maxNumFaces: 1,
+
+    refineLandmarks: true,
+
+    minDetectionConfidence: .5,
+
+    minTrackingConfidence: .5
+
+});
+
+
+/* ==========================================
+   FACE RESULTS
+========================================== */
+
+faceMesh.onResults(results => {
+
+    canvas.width =
+        video.videoWidth;
+
+    canvas.height =
+        video.videoHeight;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    if (
+        !results.multiFaceLandmarks ||
+        results.multiFaceLandmarks.length === 0
+    ) {
+
+        status.textContent =
+            "No face detected";
+
+        return;
+
+    }
+
+
+    status.textContent =
+        "Face detected ✓";
+
+
+    const points =
+        results.multiFaceLandmarks[0];
+
+
+    drawLandmarks(points);
+
+    analyzeFace(points);
+
+});
+
+
+/* ==========================================
+   DRAW LANDMARKS
+========================================== */
+
+function drawLandmarks(points) {
+
+    ctx.fillStyle =
+        "#00ffa3";
+
+
+    for (const point of points) {
+
+        const x =
+            point.x * canvas.width;
+
+        const y =
+            point.y * canvas.height;
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            1.6,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+}
+
+
+/* ==========================================
+   DISTANCE
+========================================== */
+
+function distance(a,b) {
+
+    return Math.sqrt(
+
+        Math.pow(a.x-b.x,2) +
+
+        Math.pow(a.y-b.y,2)
+
+    );
+
+}
+
+
+/* ==========================================
+   CLAMP
+========================================== */
+
+function clamp(value,min,max) {
+
+    return Math.max(
+        min,
+        Math.min(max,value)
+    );
+
+}
+
+
+/* ==========================================
+   FACE ANALYSIS
+========================================== */
+
+function analyzeFace(points) {
+
+
+    /*
+       IMPORTANT LANDMARKS
+    */
+
+    const forehead =
+        points[10];
+
+    const chin =
+        points[152];
+
+    const leftFace =
+        points[234];
+
+    const rightFace =
+        points[454];
+
+    const leftEye =
+        points[33];
+
+    const rightEye =
+        points[263];
+
+    const nose =
+        points[1];
+
+    const leftMouth =
+        points[61];
+
+    const rightMouth =
+        points[291];
+
+
+    /* =========================
+       DIMENSIONS
+    ========================= */
+
+    const faceWidth =
+        distance(
+            leftFace,
+            rightFace
+        );
+
+    const faceHeight =
+        distance(
+            forehead,
+            chin
+        );
+
+
+    const faceRatio =
+        faceHeight /
+        faceWidth;
+
+
+    /* =========================
+       SYMMETRY
+    ========================= */
+
+    const leftNose =
+        distance(
+            nose,
+            leftFace
+        );
+
+    const rightNose =
+        distance(
+            nose,
+            rightFace
+        );
+
+
+    const symmetryDifference =
+        Math.abs(
+            leftNose-rightNose
+        );
+
+
+    let symmetry =
+        100 -
+        (
+            symmetryDifference /
+            faceWidth
+        ) * 500;
+
+
+    symmetry =
+        clamp(
+            symmetry,
+            0,
+            100
+        );
+
+
+    /* =========================
+       PROPORTION
+    ========================= */
+
+    /*
+       Reference range used only
+       for this fun visualization.
+    */
+
+    let proportion =
+        100 -
+        Math.abs(
+            faceRatio - 1.35
+        ) * 150;
+
+
+    proportion =
+        clamp(
+            proportion,
+            0,
+            100
+        );
+
+
+    /* =========================
+       EYE SPACING
+    ========================= */
+
+    const eyeDistance =
+        distance(
+            leftEye,
+            rightEye
+        );
+
+
+    const eyeRatio =
+        eyeDistance /
+        faceWidth;
+
+
+    let eyeScore =
+        100 -
+        Math.abs(
+            eyeRatio-.43
+        ) * 500;
+
+
+    eyeScore =
+        clamp(
+            eyeScore,
+            0,
+            100
+        );
+
+
+    /* =========================
+       MOUTH BALANCE
+    ========================= */
+
+    const mouthWidth =
+        distance(
+            leftMouth,
+            rightMouth
+        );
+
+
+    let mouthBalance =
+        100 -
+        Math.abs(
+            (mouthWidth / faceWidth)
+            -.38
+        ) * 400;
+
+
+    mouthBalance =
+        clamp(
+            mouthBalance,
+            0,
+            100
+        );
+
+
+    /* =========================
+       OVERALL
+    ========================= */
+
+    const overall = Math.round(
+
+        symmetry * .35 +
+
+        proportion * .30 +
+
+        eyeScore * .20 +
+
+        mouthBalance * .15
+
+    );
+
+
+    /* =========================
+       FACE SHAPE
+    ========================= */
+
+    let faceShape;
+
+
+    if (faceRatio >= 1.55) {
+
+        faceShape =
+            "Oblong";
+
+    }
+
+    else if (faceRatio >= 1.38) {
+
+        faceShape =
+            "Oval";
+
+    }
+
+    else if (faceRatio >= 1.20) {
+
+        faceShape =
+            "Round";
+
+    }
+
+    else if (faceRatio >= 1.05) {
+
+        faceShape =
+            "Square / Broad";
+
+    }
+
+    else {
+
+        faceShape =
+            "Wide";
+
+    }
+
+
+    /* =========================
+       TIKTOK-STYLE TIER
+    ========================= */
+
+    let tierName;
+
+    let tierColor;
+
+
+    if (overall < 40) {
+
+        tierName =
+            "Sub-5";
+
+        tierColor =
+            "#ff4d67";
+
+    }
+
+    else if (overall < 55) {
+
+        tierName =
+            "Normie";
+
+        tierColor =
+            "#ffb84d";
+
+    }
+
+    else if (overall < 65) {
+
+        tierName =
+            "High-Tier Normie";
+
+        tierColor =
+            "#ffe066";
+
+    }
+
+    else if (overall < 75) {
+
+        tierName =
+            "Chad Lite";
+
+        tierColor =
+            "#76e06f";
+
+    }
+
+    else if (overall < 85) {
+
+        tierName =
+            "Chad";
+
+        tierColor =
+            "#00ffa3";
+
+    }
+
+    else if (overall < 95) {
+
+        tierName =
+            "High-Tier Chad";
+
+        tierColor =
+            "#00c8ff";
+
+    }
+
+    else {
+
+        tierName =
+            "Elite";
+
+        tierColor =
+            "#b56cff";
+
+    }
+
+
+    /* =========================
+       UPDATE SCORE
+    ========================= */
+
+    score.textContent =
+        overall;
+
+
+    scoreRing.style.setProperty(
+        "--score",
+        overall + "%"
+    );
+
+
+    tier.textContent =
+        tierName;
+
+
+    tier.style.color =
+        tierColor;
+
+
+    tier.style.borderColor =
+        tierColor;
+
+
+    tier.style.background =
+        tierColor + "18";
+
+
+    /* =========================
+       UPDATE BARS
+    ========================= */
+
+    updateFeature(
+        "symmetry",
+        symmetry
+    );
+
+    updateFeature(
+        "proportion",
+        proportion
+    );
+
+    updateFeature(
+        "eye",
+        eyeScore
+    );
+
+    updateFeature(
+        "balance",
+        mouthBalance
+    );
+
+
+    /* =========================
+       DETAILS
+    ========================= */
+
+    document.getElementById(
+        "shape"
+    ).textContent =
+        faceShape;
+
+
+    document.getElementById(
+        "ratio"
+    ).textContent =
+        faceRatio.toFixed(2);
+
+
+    document.getElementById(
+        "eyeDistance"
+    ).textContent =
+        (eyeRatio * 100).toFixed(1)
+        + "%";
+
+
+    document.getElementById(
+        "faceWidth"
+    ).textContent =
+        (faceWidth * 100).toFixed(1)
+        + "%";
+
+
+    /* =========================
+       ANALYSIS TEXT
+    ========================= */
+
+    let message =
+        `Detected face shape: ${faceShape}. `;
+
+
+    if (symmetry >= 85) {
+
+        message +=
+            "Your detected facial geometry is relatively symmetrical. ";
+
+    }
+
+    else if (symmetry >= 70) {
+
+        message +=
+            "Your detected facial geometry has good symmetry. ";
+
+    }
+
+    else {
+
+        message +=
+            "The scan detected some left/right differences in facial geometry. ";
+
+    }
+
+
+    if (proportion >= 85) {
+
+        message +=
+            "Your height-to-width proportion is close to the reference range.";
+
+    }
+
+    else {
+
+        message +=
+            "Your height-to-width proportion differs from the reference range.";
+
+    }
+
+
+    analysis.textContent =
+        message;
+
+}
+
+
+/* ==========================================
+   UPDATE FEATURE
+========================================== */
+
+function updateFeature(name,value) {
+
+    const rounded =
+        Math.round(value);
+
+
+    document.getElementById(
+        name + "Value"
+    ).textContent =
+        rounded + "%";
+
+
+    document.getElementById(
+        name + "Bar"
+    ).style.width =
+        rounded + "%";
+
+}
+
+
+/* ==========================================
+   START CAMERA
+========================================== */
+
+async function startCamera() {
+
+    try {
+
+        const stream =
+            await navigator.mediaDevices
+                .getUserMedia({
+
+                    video: {
+
+                        width: 1280,
+
+                        height: 720,
+
+                        facingMode:
+                            "user"
+
+                    },
+
+                    audio: false
+
+                });
+
+
+        video.srcObject =
+            stream;
+
+
+        video.onloadeddata = () => {
+
+            status.textContent =
+                "Scanning face...";
+
+            detect();
+
+        };
+
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        status.textContent =
+            "Camera permission denied or unavailable.";
+
+    }
+
+}
+
+
+/* ==========================================
+   DETECTION LOOP
+========================================== */
+
+async function detect() {
+
+    if (
+        !video.paused &&
+        !video.ended
+    ) {
+
+        await faceMesh.send({
+            image: video
+        });
+
+    }
+
+
+    requestAnimationFrame(
+        detect
+    );
+
+}
+
+    </script>
+
+</body>
+
+</html>
