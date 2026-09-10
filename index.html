@@ -47,7 +47,7 @@ header{
 }
 
 .card{
- background:rgba(14,21,35,.88);
+ background:rgba(14,21,35,.9);
  border:1px solid #263044;
  border-radius:24px;
  box-shadow:0 25px 80px rgba(0,0,0,.4);
@@ -121,9 +121,7 @@ canvas{
  backdrop-filter:blur(8px);
 }
 
-.status{
- color:#00ffa3;
-}
+.status{color:#00ffa3}
 
 .camera-bottom{
  padding:20px;
@@ -145,7 +143,6 @@ button{
 
 button:hover{
  transform:translateY(-2px);
- box-shadow:0 12px 35px rgba(0,220,170,.3);
 }
 
 button.stop{
@@ -186,8 +183,8 @@ button.stop{
 }
 
 .score-ring{
- width:180px;
- height:180px;
+ width:190px;
+ height:190px;
  margin:0 auto 15px;
  border-radius:50%;
  display:flex;
@@ -196,14 +193,14 @@ button.stop{
  position:relative;
  background:conic-gradient(#00ffa3 var(--score),#202b3d 0);
  box-shadow:0 0 45px rgba(0,255,160,.14);
- transition:background .5s;
+ transition:.5s;
 }
 
 .score-ring:before{
  content:"";
  position:absolute;
- width:148px;
- height:148px;
+ width:155px;
+ height:155px;
  border-radius:50%;
  background:#101725;
 }
@@ -215,6 +212,14 @@ button.stop{
  font-weight:900;
 }
 
+.score-outof{
+ position:absolute;
+ z-index:2;
+ margin-top:70px;
+ color:#77859b;
+ font-size:13px;
+}
+
 .score-title{
  color:#8995a9;
 }
@@ -224,9 +229,6 @@ button.stop{
  margin-top:12px;
  padding:8px 18px;
  border-radius:30px;
- color:#00ffa3;
- border:1px solid #00ffa3;
- background:rgba(0,255,160,.08);
  font-size:21px;
  font-weight:900;
 }
@@ -252,7 +254,11 @@ button.stop{
 }
 
 .feature-name{color:#dbe4f0}
-.feature-score{color:#00ffa3;font-weight:bold}
+
+.feature-score{
+ color:#00ffa3;
+ font-weight:bold;
+}
 
 .bar{
  width:100%;
@@ -269,6 +275,49 @@ button.stop{
  background:linear-gradient(90deg,#00ffa3,#00aaff);
  transition:width .7s ease;
 }
+
+/* GOOD / BAD */
+
+.insight-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+ margin-top:20px;
+}
+
+.insight{
+ padding:16px;
+ border-radius:15px;
+ border:1px solid;
+}
+
+.good{
+ background:rgba(0,255,160,.055);
+ border-color:rgba(0,255,160,.2);
+}
+
+.improve{
+ background:rgba(255,184,77,.055);
+ border-color:rgba(255,184,77,.2);
+}
+
+.insight-title{
+ font-size:14px;
+ font-weight:900;
+ margin-bottom:10px;
+}
+
+.good .insight-title{color:#00ffa3}
+.improve .insight-title{color:#ffbd5c}
+
+.insight-item{
+ color:#aab5c5;
+ font-size:13px;
+ line-height:1.55;
+ margin:8px 0;
+}
+
+/* DETAILS */
 
 .details{
  display:grid;
@@ -294,11 +343,17 @@ button.stop{
  font-weight:bold;
 }
 
+/* ANALYSIS */
+
 .analysis{
  margin-top:18px;
  padding:17px;
  border-radius:14px;
- background:linear-gradient(135deg,rgba(0,255,160,.07),rgba(0,160,255,.05));
+ background:linear-gradient(
+   135deg,
+   rgba(0,255,160,.07),
+   rgba(0,160,255,.05)
+ );
  border:1px solid #243449;
  color:#aab5c5;
  line-height:1.6;
@@ -320,6 +375,22 @@ button.stop{
  font-size:12px;
  line-height:1.6;
 }
+
+@media(max-width:850px){
+
+ .app{
+   grid-template-columns:1fr;
+ }
+
+ .logo{
+   font-size:27px;
+ }
+
+ .insight-grid{
+   grid-template-columns:1fr;
+ }
+
+}
 </style>
 </head>
 
@@ -332,6 +403,8 @@ button.stop{
 
 <div class="app">
 
+<!-- CAMERA -->
+
 <section class="card">
 
  <div class="camera" id="cameraBox">
@@ -342,8 +415,13 @@ button.stop{
   <div class="scan-line"></div>
 
   <div class="camera-info">
-   <div class="badge">● <span class="status" id="cameraStatus">READY</span></div>
-   <div class="badge" id="faceState">No face</div>
+   <div class="badge">
+    ● <span class="status" id="cameraStatus">READY</span>
+   </div>
+
+   <div class="badge" id="faceState">
+    No face
+   </div>
   </div>
 
  </div>
@@ -367,93 +445,221 @@ button.stop{
 </section>
 
 
+<!-- RESULTS -->
+
 <section class="card results">
 
  <div class="score-area">
 
-  <div class="score-ring" id="scoreRing" style="--score:0%">
-   <div class="score-number" id="score">--</div>
+  <div class="score-ring"
+       id="scoreRing"
+       style="--score:0%">
+
+   <div class="score-number" id="score">
+    --
+   </div>
+
+   <div class="score-outof">
+    / 10
+   </div>
+
   </div>
 
-  <div class="score-title">Visual Harmony Score</div>
+  <div class="score-title">
+   Overall Rating
+  </div>
 
-  <div class="tier" id="tier">Waiting for scan</div>
+  <div class="tier" id="tier">
+   Waiting for scan
+  </div>
 
  </div>
 
 
- <div class="section-title">Geometry Analysis</div>
+ <div class="section-title">
+  Geometry Analysis
+ </div>
+
 
  <div class="feature">
   <div class="feature-header">
-   <span class="feature-name">Facial Symmetry</span>
-   <span class="feature-score" id="symmetryValue">--</span>
+   <span class="feature-name">
+    Facial Symmetry
+   </span>
+
+   <span class="feature-score"
+         id="symmetryValue">
+    --
+   </span>
   </div>
-  <div class="bar"><div class="fill" id="symmetryBar"></div></div>
+
+  <div class="bar">
+   <div class="fill" id="symmetryBar"></div>
+  </div>
  </div>
+
 
  <div class="feature">
   <div class="feature-header">
-   <span class="feature-name">Face Proportion</span>
-   <span class="feature-score" id="proportionValue">--</span>
+   <span class="feature-name">
+    Face Proportion
+   </span>
+
+   <span class="feature-score"
+         id="proportionValue">
+    --
+   </span>
   </div>
-  <div class="bar"><div class="fill" id="proportionBar"></div></div>
+
+  <div class="bar">
+   <div class="fill" id="proportionBar"></div>
+  </div>
  </div>
+
 
  <div class="feature">
   <div class="feature-header">
-   <span class="feature-name">Eye Spacing</span>
-   <span class="feature-score" id="eyeValue">--</span>
+   <span class="feature-name">
+    Eye Spacing
+   </span>
+
+   <span class="feature-score"
+         id="eyeValue">
+    --
+   </span>
   </div>
-  <div class="bar"><div class="fill" id="eyeBar"></div></div>
+
+  <div class="bar">
+   <div class="fill" id="eyeBar"></div>
+  </div>
  </div>
+
 
  <div class="feature">
   <div class="feature-header">
-   <span class="feature-name">Facial Balance</span>
-   <span class="feature-score" id="balanceValue">--</span>
+   <span class="feature-name">
+    Facial Balance
+   </span>
+
+   <span class="feature-score"
+         id="balanceValue">
+    --
+   </span>
   </div>
-  <div class="bar"><div class="fill" id="balanceBar"></div></div>
+
+  <div class="bar">
+   <div class="fill" id="balanceBar"></div>
+  </div>
  </div>
+
 
  <div class="feature">
   <div class="feature-header">
-   <span class="feature-name">Eye Symmetry</span>
-   <span class="feature-score" id="eyeSymValue">--</span>
+   <span class="feature-name">
+    Eye Symmetry
+   </span>
+
+   <span class="feature-score"
+         id="eyeSymValue">
+    --
+   </span>
   </div>
-  <div class="bar"><div class="fill" id="eyeSymBar"></div></div>
+
+  <div class="bar">
+   <div class="fill" id="eyeSymBar"></div>
+  </div>
  </div>
 
 
- <div class="section-title">Measurements</div>
+ <!-- GOOD / IMPROVE -->
+
+ <div class="insight-grid">
+
+  <div class="insight good">
+
+   <div class="insight-title">
+    ✨ Strong Features
+   </div>
+
+   <div id="goodFeatures">
+    Scan your face to see your strongest measurements.
+   </div>
+
+  </div>
+
+
+  <div class="insight improve">
+
+   <div class="insight-title">
+    ⚠️ Lower-Scoring Areas
+   </div>
+
+   <div id="improveFeatures">
+    Your lower-scoring measurements will appear here.
+   </div>
+
+  </div>
+
+ </div>
+
+
+ <div class="section-title">
+  Measurements
+ </div>
+
 
  <div class="details">
 
   <div class="detail">
-   <div class="detail-label">Face Shape</div>
-   <div class="detail-value" id="shape">--</div>
+   <div class="detail-label">
+    Face Shape
+   </div>
+
+   <div class="detail-value" id="shape">
+    --
+   </div>
   </div>
 
-  <div class="detail">
-   <div class="detail-label">Face Ratio</div>
-   <div class="detail-value" id="ratio">--</div>
-  </div>
 
   <div class="detail">
-   <div class="detail-label">Eye Distance</div>
-   <div class="detail-value" id="eyeDistance">--</div>
+   <div class="detail-label">
+    Face Ratio
+   </div>
+
+   <div class="detail-value" id="ratio">
+    --
+   </div>
   </div>
 
+
   <div class="detail">
-   <div class="detail-label">Face Width</div>
-   <div class="detail-value" id="faceWidth">--</div>
+   <div class="detail-label">
+    Eye Distance
+   </div>
+
+   <div class="detail-value" id="eyeDistance">
+    --
+   </div>
+  </div>
+
+
+  <div class="detail">
+   <div class="detail-label">
+    Face Width
+   </div>
+
+   <div class="detail-value" id="faceWidth">
+    --
+   </div>
   </div>
 
  </div>
+
 
  <div class="analysis" id="analysis">
   Position your face inside the camera to begin.
  </div>
+
 
  <div class="confidence" id="confidence">
   Scan confidence: --
@@ -462,6 +668,7 @@ button.stop{
 </section>
 
 </div>
+
 
 <div class="disclaimer">
  This is a fun, geometry-based face analysis. It does not objectively measure
@@ -491,31 +698,38 @@ const tier=document.getElementById("tier");
 const analysis=document.getElementById("analysis");
 const confidence=document.getElementById("confidence");
 
+const goodFeatures=document.getElementById("goodFeatures");
+const improveFeatures=document.getElementById("improveFeatures");
+
 let stream=null;
 let scanning=false;
 let processing=false;
 
-/*
-   Instead of using one frame, collect many
-   measurements and average them.
-*/
-
 let samples=[];
-const REQUIRED_SAMPLES=35;
+
+/*
+  More samples = more stable result.
+*/
+const REQUIRED_SAMPLES=45;
 
 
 /* MEDIAPIPE */
 
 const faceMesh=new FaceMesh({
+
  locateFile:file =>
  `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+
 });
 
 faceMesh.setOptions({
+
  maxNumFaces:1,
  refineLandmarks:true,
+
  minDetectionConfidence:.65,
  minTrackingConfidence:.65
+
 });
 
 
@@ -526,57 +740,93 @@ faceMesh.onResults(results=>{
  canvas.width=video.videoWidth||1280;
  canvas.height=video.videoHeight||720;
 
- ctx.clearRect(0,0,canvas.width,canvas.height);
+ ctx.clearRect(
+   0,
+   0,
+   canvas.width,
+   canvas.height
+ );
 
- if(!results.multiFaceLandmarks ||
-    results.multiFaceLandmarks.length===0){
+
+ if(
+   !results.multiFaceLandmarks ||
+   results.multiFaceLandmarks.length===0
+ ){
 
    faceState.textContent="No face";
    faceState.style.color="#ff6678";
 
    if(scanning){
-     status.textContent="No face detected — position yourself in frame.";
+
+     status.textContent=
+       "No face detected — position yourself in frame.";
+
    }
 
    return;
  }
 
- const points=results.multiFaceLandmarks[0];
 
- faceState.textContent="Face detected ✓";
- faceState.style.color="#00ffa3";
+ const points=
+   results.multiFaceLandmarks[0];
+
+
+ faceState.textContent=
+   "Face detected ✓";
+
+ faceState.style.color=
+   "#00ffa3";
+
 
  drawLandmarks(points);
 
+
  if(scanning){
 
-   const measurement=measureFace(points);
+   const measurement=
+     measureFace(points);
+
 
    if(measurement){
 
      samples.push(measurement);
 
+
      const percent=Math.min(
        100,
-       Math.round(samples.length/REQUIRED_SAMPLES*100)
+       Math.round(
+         samples.length/
+         REQUIRED_SAMPLES*
+         100
+       )
      );
 
-     progress.style.width=percent+"%";
+
+     progress.style.width=
+       percent+"%";
+
 
      status.textContent=
        `Analyzing facial geometry... ${percent}%`;
 
-     if(samples.length>=REQUIRED_SAMPLES){
+
+     if(
+       samples.length>=
+       REQUIRED_SAMPLES
+     ){
+
        finishScan();
+
      }
 
    }
+
  }
 
 });
 
 
-/* LANDMARK DRAWING */
+/* LANDMARKS */
 
 function drawLandmarks(points){
 
@@ -584,13 +834,26 @@ function drawLandmarks(points){
 
  for(const p of points){
 
-   const x=p.x*canvas.width;
-   const y=p.y*canvas.height;
+   const x=
+     p.x*canvas.width;
+
+   const y=
+     p.y*canvas.height;
 
    ctx.beginPath();
-   ctx.arc(x,y,1.5,0,Math.PI*2);
+
+   ctx.arc(
+     x,
+     y,
+     1.5,
+     0,
+     Math.PI*2
+   );
+
    ctx.fill();
+
  }
+
 }
 
 
@@ -602,6 +865,7 @@ function distance(a,b){
    a.x-b.x,
    a.y-b.y
  );
+
 }
 
 
@@ -609,14 +873,47 @@ function distance(a,b){
 
 function clamp(v,min,max){
 
- return Math.max(min,Math.min(max,v));
+ return Math.max(
+   min,
+   Math.min(max,v)
+ );
+
 }
 
 
 /*
-   Calculate measurements for ONE frame.
-   Frames are later averaged.
+  Converts distance from a reference
+  into a fair 0-100 score.
+
+  The reference has a tolerance zone,
+  so tiny differences don't get punished.
 */
+
+function referenceScore(value,ideal,tolerance){
+
+ const difference=
+   Math.abs(value-ideal);
+
+ if(difference<=tolerance){
+
+   return 100-
+     (difference/tolerance)*8;
+
+ }
+
+ const extra=
+   difference-tolerance;
+
+ return clamp(
+   92-extra/(tolerance*2.5)*42,
+   45,
+   92
+ );
+
+}
+
+
+/* MEASURE */
 
 function measureFace(points){
 
@@ -641,15 +938,26 @@ function measureFace(points){
  const rightEyeBottom=points[374];
 
 
- const faceWidth=distance(leftFace,rightFace);
- const faceHeight=distance(forehead,chin);
+ const faceWidth=
+   distance(leftFace,rightFace);
 
- if(faceWidth<.05 || faceHeight<.05){
+ const faceHeight=
+   distance(forehead,chin);
+
+
+ if(
+   faceWidth<.05 ||
+   faceHeight<.05
+ ){
+
    return null;
+
  }
 
 
- const faceRatio=faceHeight/faceWidth;
+ const faceRatio=
+   faceHeight/faceWidth;
+
 
  const eyeDistance=
    distance(leftEye,rightEye);
@@ -658,97 +966,539 @@ function measureFace(points){
    eyeDistance/faceWidth;
 
 
- /* symmetry */
+ /* FACIAL SYMMETRY */
 
- const leftNose=distance(nose,leftFace);
- const rightNose=distance(nose,rightFace);
+ const leftNose=
+   distance(nose,leftFace);
+
+ const rightNose=
+   distance(nose,rightFace);
 
  const symmetryDifference=
-   Math.abs(leftNose-rightNose);
+   Math.abs(
+     leftNose-rightNose
+   );
+
 
  let symmetry=
-   100-(symmetryDifference/faceWidth)*500;
-
- symmetry=clamp(symmetry,0,100);
-
-
- /* proportion */
-
- let proportion=
-   100-Math.abs(faceRatio-1.35)*150;
-
- proportion=clamp(proportion,0,100);
+   100-
+   (symmetryDifference/
+    faceWidth)*300;
 
 
- /* eye spacing */
+ symmetry=
+   clamp(
+     symmetry,
+     45,
+     100
+   );
 
- let eyeScore=
-   100-Math.abs(eyeRatio-.43)*500;
 
- eyeScore=clamp(eyeScore,0,100);
+ /* PROPORTION */
+
+ const proportion=
+   referenceScore(
+     faceRatio,
+     1.35,
+     .18
+   );
 
 
- /* mouth balance */
+ /* EYE SPACING */
+
+ const eyeScore=
+   referenceScore(
+     eyeRatio,
+     .43,
+     .06
+   );
+
+
+ /* FACIAL BALANCE */
 
  const mouthWidth=
-   distance(leftMouth,rightMouth);
+   distance(
+     leftMouth,
+     rightMouth
+   );
 
- let balance=
-   100-Math.abs(
-     (mouthWidth/faceWidth)-.38
-   )*400;
-
- balance=clamp(balance,0,100);
+ const mouthRatio=
+   mouthWidth/faceWidth;
 
 
- /* eye symmetry */
+ const balance=
+   referenceScore(
+     mouthRatio,
+     .38,
+     .09
+   );
+
+
+ /* EYE SYMMETRY */
 
  const leftEyeHeight=
-   distance(leftEyeTop,leftEyeBottom);
+   distance(
+     leftEyeTop,
+     leftEyeBottom
+   );
 
  const rightEyeHeight=
-   distance(rightEyeTop,rightEyeBottom);
+   distance(
+     rightEyeTop,
+     rightEyeBottom
+   );
+
+
+ const eyeDifference=
+   Math.abs(
+     leftEyeHeight-
+     rightEyeHeight
+   )/
+   Math.max(
+     leftEyeHeight,
+     rightEyeHeight
+   );
+
 
  let eyeSymmetry=
-   100-
-   Math.abs(leftEyeHeight-rightEyeHeight)
-   /Math.max(leftEyeHeight,rightEyeHeight)
-   *500;
-
- eyeSymmetry=clamp(eyeSymmetry,0,100);
+   100-eyeDifference*260;
 
 
- return {
+ eyeSymmetry=
+   clamp(
+     eyeSymmetry,
+     45,
+     100
+   );
+
+
+ return{
+
    faceWidth,
    faceRatio,
    eyeRatio,
+
    symmetry,
    proportion,
    eyeScore,
    balance,
    eyeSymmetry
+
  };
+
 }
 
 
-/* AVERAGE SAMPLES */
+/* AVERAGE */
 
 function averageSamples(){
 
  const result={};
 
- const keys=Object.keys(samples[0]);
+ const keys=
+   Object.keys(samples[0]);
+
 
  for(const key of keys){
 
    result[key]=
      samples.reduce(
-       (sum,s)=>sum+s[key],
+       (sum,s)=>
+         sum+s[key],
        0
-     )/samples.length;
+     )/
+     samples.length;
+
  }
 
+
  return result;
+
+}
+
+
+/* OVERALL */
+
+function calculateOverall(avg){
+
+ /*
+   Balanced weighting.
+   No single measurement controls
+   the entire score.
+ */
+
+ const raw=
+
+   avg.symmetry*.28+
+
+   avg.proportion*.22+
+
+   avg.eyeScore*.18+
+
+   avg.balance*.17+
+
+   avg.eyeSymmetry*.15;
+
+
+ /*
+   Convert attribute average to
+   a 0-10 rating.
+
+   A 70/100 becomes 7.0,
+   83 becomes 8.3, etc.
+ */
+
+ return clamp(
+   raw/10,
+   0,
+   10
+ );
+
+}
+
+
+/* TIER */
+
+function getTier(score){
+
+ if(score>=9.5)
+   return{
+     name:"Elite",
+     color:"#b56cff"
+   };
+
+ if(score>=9.0)
+   return{
+     name:"High-Tier Chad",
+     color:"#00c8ff"
+   };
+
+ if(score>=8.0)
+   return{
+     name:"Chad",
+     color:"#00ffa3"
+   };
+
+ if(score>=7.0)
+   return{
+     name:"Chad Lite",
+     color:"#76e06f"
+   };
+
+ if(score>=6.0)
+   return{
+     name:"High-Tier Normie",
+     color:"#ffe066"
+   };
+
+ if(score>=5.5)
+   return{
+     name:"Mid-Tier Normie",
+     color:"#ffc857"
+   };
+
+ if(score>=5.0)
+   return{
+     name:"Low-Tier Normie",
+     color:"#ffb84d"
+   };
+
+ if(score>=4.0)
+   return{
+     name:"Sub-5",
+     color:"#ff6678"
+   };
+
+ return{
+   name:"Low Sub-5",
+   color:"#ff3654"
+ };
+
+}
+
+
+/* SHAPE */
+
+function getShape(ratio){
+
+ if(ratio>=1.55)
+   return"Oblong";
+
+ if(ratio>=1.38)
+   return"Oval";
+
+ if(ratio>=1.20)
+   return"Round";
+
+ if(ratio>=1.05)
+   return"Square / Broad";
+
+ return"Wide";
+
+}
+
+
+/* FEATURE DATA */
+
+function getFeatureList(avg){
+
+ return [
+
+  {
+   name:"Facial Symmetry",
+   value:avg.symmetry
+  },
+
+  {
+   name:"Face Proportion",
+   value:avg.proportion
+  },
+
+  {
+   name:"Eye Spacing",
+   value:avg.eyeScore
+  },
+
+  {
+   name:"Facial Balance",
+   value:avg.balance
+  },
+
+  {
+   name:"Eye Symmetry",
+   value:avg.eyeSymmetry
+  }
+
+ ];
+
+}
+
+
+/* INSIGHTS */
+
+function generateInsights(avg){
+
+ const features=
+   getFeatureList(avg)
+   .sort(
+     (a,b)=>b.value-a.value
+   );
+
+
+ const strongest=
+   features.slice(0,3);
+
+ const weakest=
+   features
+   .slice()
+   .sort(
+     (a,b)=>a.value-b.value
+   )
+   .slice(0,2);
+
+
+ goodFeatures.innerHTML=
+   strongest.map(f=>
+     `<div class="insight-item">
+       🟢 <strong>${f.name}</strong> —
+       ${Math.round(f.value)}/100.
+       ${
+         getPositiveText(
+           f.name,
+           f.value
+         )
+       }
+      </div>`
+   ).join("");
+
+
+ improveFeatures.innerHTML=
+   weakest.map(f=>
+     `<div class="insight-item">
+       🟡 <strong>${f.name}</strong> —
+       ${Math.round(f.value)}/100.
+       ${
+         getImproveText(
+           f.name,
+           f.value
+         )
+       }
+      </div>`
+   ).join("");
+
+}
+
+
+/* POSITIVE TEXT */
+
+function getPositiveText(name,value){
+
+ if(name==="Facial Symmetry")
+   return value>=85
+     ?"Strong left/right geometric balance."
+     :"Relatively balanced left/right geometry.";
+
+ if(name==="Face Proportion")
+   return value>=85
+     ?"Close to the reference proportion."
+     :"Reasonably close to the reference proportion.";
+
+ if(name==="Eye Spacing")
+   return value>=85
+     ?"Eye spacing is close to the reference range."
+     :"Eye spacing falls reasonably near the reference range.";
+
+ if(name==="Facial Balance")
+   return value>=85
+     ?"Strong relationship between measured facial widths."
+     :"Good overall geometric balance.";
+
+ return value>=85
+   ?"Very consistent eye geometry."
+   :"Relatively consistent eye geometry.";
+
+}
+
+
+/* IMPROVE TEXT */
+
+function getImproveText(name,value){
+
+ if(name==="Facial Symmetry")
+   return"One of the larger left/right differences in the scan.";
+
+ if(name==="Face Proportion")
+   return"Further from the reference height-to-width range.";
+
+ if(name==="Eye Spacing")
+   return"More distance from the reference eye-spacing range.";
+
+ if(name==="Facial Balance")
+   return"More variation from the reference balance range.";
+
+ return"Greater difference between the measured eye heights.";
+
+}
+
+
+/* ANALYSIS */
+
+function getAnalysis(avg,overall){
+
+ let text=
+   `The scan produced an overall rating of ${
+     overall.toFixed(1)
+   }/10. `;
+
+
+ if(avg.symmetry>=85)
+   text+=
+     "Facial symmetry was one of the strongest measurements. ";
+
+ else if(avg.symmetry>=70)
+   text+=
+     "Facial symmetry was reasonably balanced. ";
+
+ else
+   text+=
+     "Facial symmetry showed more noticeable left/right variation. ";
+
+
+ if(avg.proportion>=85)
+   text+=
+     "Face proportions were close to the reference range. ";
+
+ else
+   text+=
+     "Face proportions were farther from the reference range. ";
+
+
+ if(avg.eyeScore>=85)
+   text+=
+     "Eye spacing was also close to the reference range.";
+
+ else
+   text+=
+     "Eye spacing contributed some downward pressure to the rating.";
+
+
+ return text;
+
+}
+
+
+/* UPDATE BAR */
+
+function updateFeature(name,value){
+
+ const rounded=
+   Math.round(value);
+
+
+ document.getElementById(
+   name+"Value"
+ ).textContent=
+   rounded+"/100";
+
+
+ document.getElementById(
+   name+"Bar"
+ ).style.width=
+   rounded+"%";
+
+}
+
+
+/* CONSISTENCY */
+
+function getConsistency(){
+
+ if(samples.length<2)
+   return 0;
+
+
+ const scores=
+   samples.map(s=>
+     (
+       s.symmetry+
+       s.proportion+
+       s.eyeScore+
+       s.balance+
+       s.eyeSymmetry
+     )/5
+   );
+
+
+ const mean=
+   scores.reduce(
+     (a,b)=>a+b,
+     0
+   )/
+   scores.length;
+
+
+ const variance=
+   scores.reduce(
+     (sum,x)=>
+       sum+
+       Math.pow(x-mean,2),
+     0
+   )/
+   scores.length;
+
+
+ const deviation=
+   Math.sqrt(variance);
+
+
+ return Math.round(
+   clamp(
+     100-deviation*4,
+     0,
+     100
+   )
+ );
+
 }
 
 
@@ -757,181 +1507,140 @@ function averageSamples(){
 function finishScan(){
 
  scanning=false;
- cameraBox.classList.remove("scanning");
 
- scanButton.textContent="🔄 Scan Again";
- scanButton.classList.remove("stop");
-
- const avg=averageSamples();
-
- const overall=Math.round(
-   avg.symmetry*.30+
-   avg.proportion*.25+
-   avg.eyeScore*.20+
-   avg.balance*.15+
-   avg.eyeSymmetry*.10
+ cameraBox.classList.remove(
+   "scanning"
  );
 
- const shape=getShape(avg.faceRatio);
+ scanButton.textContent=
+   "🔄 Scan Again";
 
- const tierData=getTier(overall);
+ scanButton.classList.remove(
+   "stop"
+ );
 
- scoreEl.textContent=overall;
+
+ const avg=
+   averageSamples();
+
+
+ const overall=
+   calculateOverall(avg);
+
+
+ const shape=
+   getShape(
+     avg.faceRatio
+   );
+
+
+ const tierData=
+   getTier(overall);
+
+
+ scoreEl.textContent=
+   overall.toFixed(1);
+
 
  scoreRing.style.setProperty(
    "--score",
-   overall+"%"
+   (overall*10)+"%"
  );
 
- tier.textContent=tierData.name;
- tier.style.color=tierData.color;
- tier.style.borderColor=tierData.color;
- tier.style.background=tierData.color+"18";
 
- updateFeature("symmetry",avg.symmetry);
- updateFeature("proportion",avg.proportion);
- updateFeature("eye",avg.eyeScore);
- updateFeature("balance",avg.balance);
- updateFeature("eyeSym",avg.eyeSymmetry);
+ tier.textContent=
+   tierData.name;
 
- document.getElementById("shape").textContent=shape;
- document.getElementById("ratio").textContent=
+
+ tier.style.color=
+   tierData.color;
+
+ tier.style.borderColor=
+   tierData.color;
+
+ tier.style.background=
+   tierData.color+"18";
+
+
+ updateFeature(
+   "symmetry",
+   avg.symmetry
+ );
+
+ updateFeature(
+   "proportion",
+   avg.proportion
+ );
+
+ updateFeature(
+   "eye",
+   avg.eyeScore
+ );
+
+ updateFeature(
+   "balance",
+   avg.balance
+ );
+
+ updateFeature(
+   "eyeSym",
+   avg.eyeSymmetry
+ );
+
+
+ document.getElementById(
+   "shape"
+ ).textContent=
+   shape;
+
+
+ document.getElementById(
+   "ratio"
+ ).textContent=
    avg.faceRatio.toFixed(2);
 
- document.getElementById("eyeDistance").textContent=
-   (avg.eyeRatio*100).toFixed(1)+"%";
 
- document.getElementById("faceWidth").textContent=
-   (avg.faceWidth*100).toFixed(1)+"%";
+ document.getElementById(
+   "eyeDistance"
+ ).textContent=
+   (avg.eyeRatio*100)
+   .toFixed(1)+"%";
 
- const consistency=getConsistency();
+
+ document.getElementById(
+   "faceWidth"
+ ).textContent=
+   (avg.faceWidth*100)
+   .toFixed(1)+"%";
+
+
+ generateInsights(avg);
+
+
+ const consistency=
+   getConsistency();
+
 
  confidence.textContent=
    `Scan confidence: ${consistency}%`;
 
+
  analysis.textContent=
-   `Detected face shape: ${shape}. `+
-   getAnalysis(avg,overall);
-
- status.textContent="Scan complete ✓";
- cameraStatus.textContent="COMPLETE";
-
- progress.style.width="100%";
-}
+   getAnalysis(
+     avg,
+     overall
+   );
 
 
-/* CONSISTENCY */
+ status.textContent=
+   "Scan complete ✓";
 
-function getConsistency(){
+ cameraStatus.textContent=
+   "COMPLETE";
 
- if(samples.length<2) return 0;
+ progress.style.width=
+   "100%";
 
- const scores=samples.map(
-   s=>(
-     s.symmetry+
-     s.proportion+
-     s.eyeScore+
-     s.balance+
-     s.eyeSymmetry
-   )/5
- );
-
- const mean=
-   scores.reduce((a,b)=>a+b,0)/scores.length;
-
- const variance=
-   scores.reduce(
-     (sum,x)=>sum+Math.pow(x-mean,2),
-     0
-   )/scores.length;
-
- const deviation=Math.sqrt(variance);
-
- return Math.round(
-   clamp(100-deviation*4,0,100)
- );
-}
-
-
-/* SHAPE */
-
-function getShape(ratio){
-
- if(ratio>=1.55)return"Oblong";
- if(ratio>=1.38)return"Oval";
- if(ratio>=1.20)return"Round";
- if(ratio>=1.05)return"Square / Broad";
- return"Wide";
-}
-
-
-/* TIER */
-
-function getTier(score){
-
- if(score<40)
-   return{name:"Sub-5",color:"#ff4d67"};
-
- if(score<55)
-   return{name:"Normie",color:"#ffb84d"};
-
- if(score<65)
-   return{name:"High-Tier Normie",color:"#ffe066"};
-
- if(score<75)
-   return{name:"Chad Lite",color:"#76e06f"};
-
- if(score<85)
-   return{name:"Chad",color:"#00ffa3"};
-
- if(score<95)
-   return{name:"High-Tier Chad",color:"#00c8ff"};
-
- return{name:"Elite",color:"#b56cff"};
-}
-
-
-/* ANALYSIS */
-
-function getAnalysis(avg,overall){
-
- let text="";
-
- if(avg.symmetry>=85)
-   text+="The detected facial geometry is relatively symmetrical. ";
- else if(avg.symmetry>=70)
-   text+="The detected geometry shows good left/right balance. ";
- else
-   text+="The scan detected noticeable left/right geometric differences. ";
-
- if(avg.proportion>=85)
-   text+="The height-to-width proportion is close to the reference range. ";
-else
-   text+="The height-to-width proportion differs from the reference range. ";
-
- if(avg.eyeSymmetry>=85)
-   text+="Eye geometry was also highly consistent across the scan.";
-
- else
-   text+="Some variation was detected around the eye geometry.";
-
- return text;
-}
-
-
-/* UPDATE BAR */
-
-function updateFeature(name,value){
-
- const rounded=Math.round(value);
-
- document.getElementById(
-   name+"Value"
- ).textContent=rounded+"%";
-
- document.getElementById(
-   name+"Bar"
- ).style.width=rounded+"%";
 }
 
 
@@ -940,19 +1649,25 @@ function updateFeature(name,value){
 async function startScan(){
 
  if(scanning){
+
    stopCamera();
    return;
+
  }
 
+
  samples=[];
+
  progress.style.width="0%";
+
 
  try{
 
    if(!stream){
 
      stream=
-       await navigator.mediaDevices.getUserMedia({
+       await navigator.mediaDevices
+       .getUserMedia({
 
          video:{
            width:{ideal:1280},
@@ -964,22 +1679,40 @@ async function startScan(){
 
        });
 
-     video.srcObject=stream;
+
+     video.srcObject=
+       stream;
+
 
      await video.play();
+
    }
+
 
    scanning=true;
 
-   cameraBox.classList.add("scanning");
 
-   scanButton.textContent="⏹ Stop Scan";
-   scanButton.classList.add("stop");
+   cameraBox.classList.add(
+     "scanning"
+   );
 
-   cameraStatus.textContent="SCANNING";
+
+   scanButton.textContent=
+     "⏹ Stop Scan";
+
+
+   scanButton.classList.add(
+     "stop"
+   );
+
+
+   cameraStatus.textContent=
+     "SCANNING";
+
 
    status.textContent=
      "Position your face in the center...";
+
 
    detect();
 
@@ -989,12 +1722,16 @@ async function startScan(){
 
    console.error(error);
 
-   cameraStatus.textContent="ERROR";
+
+   cameraStatus.textContent=
+     "ERROR";
+
 
    status.textContent=
      "Camera permission denied or unavailable.";
 
  }
+
 }
 
 
@@ -1004,14 +1741,22 @@ function stopCamera(){
 
  scanning=false;
 
- cameraBox.classList.remove("scanning");
+ cameraBox.classList.remove(
+   "scanning"
+ );
 
- scanButton.textContent="📷 Start Face Scan";
- scanButton.classList.remove("stop");
+ scanButton.textContent=
+   "📷 Start Face Scan";
 
- cameraStatus.textContent="READY";
+ scanButton.classList.remove(
+   "stop"
+ );
 
- status.textContent="Scan stopped.";
+ cameraStatus.textContent=
+   "READY";
+
+ status.textContent=
+   "Scan stopped.";
 
 }
 
@@ -1020,23 +1765,42 @@ function stopCamera(){
 
 async function detect(){
 
- if(!scanning)return;
+ if(!scanning)
+   return;
 
- if(!processing && video.readyState>=2){
+
+ if(
+   !processing &&
+   video.readyState>=2
+ ){
 
    processing=true;
 
+
    try{
-     await faceMesh.send({image:video});
+
+     await faceMesh.send({
+       image:video
+     });
+
    }
+
    catch(e){
+
      console.error(e);
+
    }
+
 
    processing=false;
+
  }
 
- requestAnimationFrame(detect);
+
+ requestAnimationFrame(
+   detect
+ );
+
 }
 
 </script>
